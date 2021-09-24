@@ -7,22 +7,19 @@ from PIL import Image
 s3_client = boto3.client('s3')
 
 def reduzir_imagem (input_dir, output_dir_300, output_dir_100):
-    print(input_dir)
-    print(output_dir_300)
-    with Image.open(input_dir) as imagem:
+
+    with Image.open(input_dir).convert('RGB') as imagem:
         largura_imagem = imagem.size[0]
         altura_imagem = imagem.size[1]
         percentual_largura = float(300.0)/float(largura_imagem)
         altura_desejada = int((altura_imagem*percentual_largura))
         imagem_resize_300 = imagem.resize((300,altura_desejada))
         imagem_resize_300.save(output_dir_300)
-        print('redimencionou!')
         imagem_resize_100 = imagem.resize((100,100))
         imagem_resize_100.save(output_dir_100)
 
 def handler(event,context):
     for record in event['Records']:
-        print(record)
         bucket = record['s3']['bucket']['name']
         key = record['s3']['object']['key']
         path_to_list = key.split('/')
